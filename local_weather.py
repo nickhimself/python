@@ -50,7 +50,7 @@ class weather():
         close = False
         remaining = self.sunset_time - self.current_time
         if mod == 'PM' and remaining < 121:
-            self.time_left = f"{time_left} minutes until sunset."
+            self.time_left = f"{remaining} minutes until sunset."
             close = True
 
         print(f"Current weather report for {self.name}")
