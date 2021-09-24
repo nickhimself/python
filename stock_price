@@ -1,0 +1,49 @@
+from datetime import datetime as dt
+import json, requests, time
+import pygame as p
+
+p.init()
+pd = p.display
+
+W, H = 300, 96
+win = pd.set_mode((W, H))
+
+key = 'Your TD Ameritrade API_Key goes here'
+symbol = 'AMC' #the symbol for which you wish to fetch data
+quotes = 'https://api.tdameritrade.com/v1/marketdata/{stock}/quotes?'
+update_times = [i for i in range(0, 60, 2)] # this will update the stock every time current minute is divisible by the number 2
+
+
+def draw_text(string, size, offset, color):
+    font = p.font.SysFont('arial', size)
+    text = font.render(string, True, color)
+    text_loc = (5, 5)
+    loc = (text_loc[0] + offset[0], text_loc[1] + offset[1])
+    win.blit(text, loc)
+    pd.flip()
+
+def runUpdates(symbol):
+    win.fill((0, 0, 0))
+
+    now = dt.now().strftime("%I:%M:%S")
+    if int(now[0]) == 0: now = now[1::]
+
+    quote = quotes.format(stock=symbol)
+    parse = requests.get(url=quote, params={'apikey' : key})
+    result = json.loads(parse.content)[symbol]
+
+    last_price = 'Last price: '+ str("{:.2f}".format(result['lastPrice']))
+    volume = 'Volume: ' + str("{:,}".format(result['totalVolume']))
+
+    draw_text(now, 18, (227, 0), (255, 128, 0))
+    draw_text(symbol, 22, (0, 0), (255, 255, 0))
+    draw_text(last_price, 26, (0, 24), (128, 255, 0))
+    draw_text(volume, 30, (0, 52), (0, 128, 255))
+
+
+while True:
+    for event in p.event.get():
+        if event.type == p.KEYDOWN and event.key == p.K_ESCAPE: quit()
+
+    if int(dt.now().strftime("%M")) in update_times and int(dt.now().strftime("%S")) == 10: #updating when seconds equals 10 to ensure only one update occurs
+        runUpdates(symbol)
