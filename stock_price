@@ -9,9 +9,9 @@ W, H = 300, 96
 win = pd.set_mode((W, H))
 
 key = 'Your TD Ameritrade API_Key goes here'
-symbol = 'AMC' #the symbol for which you wish to fetch data
+symbol = 'AMC'
 quotes = 'https://api.tdameritrade.com/v1/marketdata/{stock}/quotes?'
-update_times = [i for i in range(0, 60, 2)] # this will update the stock every time current minute is divisible by the number 2
+update_times = [i for i in range(0, 60, 2)]
 
 
 def draw_text(string, size, offset, color):
@@ -22,7 +22,7 @@ def draw_text(string, size, offset, color):
     win.blit(text, loc)
     pd.flip()
 
-def runUpdates(symbol):
+def fetch_updates(symbol):
     win.fill((0, 0, 0))
 
     now = dt.now().strftime("%I:%M:%S")
@@ -43,7 +43,8 @@ def runUpdates(symbol):
 
 while True:
     for event in p.event.get():
-        if event.type == p.KEYDOWN and event.key == p.K_ESCAPE: quit()
+        if event.type == p.KEYDOWN and event.key == p.K_ESCAPE:
+            quit()
 
-    if int(dt.now().strftime("%M")) in update_times and int(dt.now().strftime("%S")) == 10: #updating when seconds equals 10 to ensure only one update occurs
-        runUpdates(symbol)
+    if int(dt.now().strftime("%M")) in update_times and int(dt.now().strftime("%S")) == 10:
+        fetch_updates(symbol)
